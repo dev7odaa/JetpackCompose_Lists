@@ -26,7 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lists.ui.theme.ListsTheme
@@ -61,23 +61,21 @@ fun ListContent() {
 
 @Composable
 fun GymItem(gymData: GymModel){
+    var isFavouriteState = remember { mutableStateOf(false) }
+    val icon = if (isFavouriteState.value){
+        Icons.Filled.Favorite
+    } else {
+        Icons.Filled.FavoriteBorder
+    }
     Card(elevation = 4.dp, modifier = Modifier.padding(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(8.dp)) {
-            PlaceIcon(Modifier.weight(0.15f))
+            DefaultIcon(Icons.Filled.Place, Modifier.weight(0.15f), "Gym Place")
             GymDetails(gymData, Modifier.weight(0.70f))
-            FavouriteIcon(Modifier.weight(0.15f))
+            DefaultIcon(icon, Modifier.weight(0.15f), "Favourite Icon"){
+                isFavouriteState.value = !isFavouriteState.value
+            }
         }
     }
-}
-
-@Composable
-fun PlaceIcon(modifier: Modifier) {
-    Image(
-        imageVector = Icons.Filled.Place,
-        contentDescription = "Gym Place",
-        modifier = modifier,
-        colorFilter = ColorFilter.tint(Color.DarkGray)
-    )
 }
 
 @Composable
@@ -86,24 +84,21 @@ fun GymDetails(gym: GymModel, modifier: Modifier) {
         Text(text = gym.gymName, style = MaterialTheme.typography.h6, color = Purple200)
         Text(text = gym.gymLocation, style = MaterialTheme.typography.body2, color = Color.Gray)
     }
-
 }
 
 @Composable
-fun FavouriteIcon(modifier: Modifier) {
-    val isFavouriteState = remember { mutableStateOf(false) }
-    val icon = if (isFavouriteState.value){
-        Icons.Filled.Favorite
-    } else {
-        Icons.Filled.FavoriteBorder
-    }
+fun DefaultIcon(
+    icon: ImageVector,
+    modifier: Modifier,
+    contentDescription: String,
+    onClick: () -> Unit = {},
+) {
     Image(
         imageVector = icon,
-        contentDescription = "Favourite Gym",
+        contentDescription = contentDescription,
+        colorFilter = ColorFilter.tint(Color.DarkGray),
         modifier = modifier
             .padding(8.dp)
-            .clickable {
-                isFavouriteState.value = !isFavouriteState.value
-            }
+            .clickable { onClick() },
     )
 }
